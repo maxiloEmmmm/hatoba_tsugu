@@ -1,0 +1,11 @@
+ui/node_modules
+ui/dist
+
+app.yaml
+
+.idea
+.vscode
+
+logs
+
+.DS_Store

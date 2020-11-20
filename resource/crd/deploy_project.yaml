@@ -1,0 +1,80 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: projects.gen.hatobatsugu.gsc
+spec:
+  group: gen.hatobatsugu.gsc
+  scope: Namespaced
+  names:
+    plural: projects
+    singular: project
+    kind: Project
+    shortNames:
+      - dp
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                  default: ""
+                git:
+                  type: object
+                  properties:
+                    url:
+                      type: string
+                resource:
+                  type: object
+                  properties:
+                    dockerfile:
+                      type: string
+                      default: ""
+                    ports:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            default: http
+                          targetPort:
+                            type: integer
+                            default: 80
+                          port:
+                            type: integer
+                            default: 80
+                          protocol:
+                            type: string
+                            default: "TCP"
+                            enum: ["TCP", "UDP", "SCTP"]
+                    configs:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          env:
+                            type: string
+                            default: ""
+                          files:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                path:
+                                  type: string
+                                  default: ""
+                                config:
+                                  type: string
+                                  default: ""
+                                description:
+                                  type: string
+                                  default: ""

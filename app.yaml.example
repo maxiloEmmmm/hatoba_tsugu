@@ -1,0 +1,3 @@
+kubernetes:
+  api_server: http://apiserver
+  token: token
