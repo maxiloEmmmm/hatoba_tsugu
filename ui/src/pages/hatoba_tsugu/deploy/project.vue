@@ -39,6 +39,15 @@ export default {
     },
     methods: {
         onAdd(data){
+            let id = ""
+            try {
+                let gitUrl = new URL(data.git.url)
+                id = this.$utils.kbid(`${gitUrl.host}.${gitUrl.pathname.replace(/(^[\/]+|[\/]+$)/, "").split("/").join("-")}`)
+            } catch (error) {
+                alert(error)
+                return
+            }
+
             let config = {
                 apiVersion: "v1", kind: "ConfigMap",
                 metadata: {name: ""}, data: {}
@@ -47,10 +56,10 @@ export default {
                 let base = {
                     apiVersion: "v1", kind: "ConfigMap",
                     metadata: {
-                        name: `project.${c.env}.${data.name}`,
+                        name: `project.${c.env}.${id}`,
                         labels: {
                             role: "app",
-                            app: data.name,
+                            app: id,
                             env: c.env
                         }
                     }, data: {}
@@ -70,7 +79,7 @@ export default {
                 spec: data,
                 apiVersion: "deploy.hatobatsugu.gsc/v1", kind: "Project",
                 metadata: {
-                    name: data.name,
+                    name: id,
                 }
             })
                 .catch(e => {

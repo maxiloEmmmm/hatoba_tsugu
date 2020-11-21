@@ -9,3 +9,14 @@ utils.add("btom", (bytes) => {
     let num = bytes / Math.pow(k, i);
     return num.toPrecision(3) + ' ' + sizes[i];
 })
+
+utils.add("kbid", (str) => {
+    //[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*
+    return str
+        // 小写
+        .toLowerCase()
+        // 移除其他
+        .replace(/[^a-z-.]/g, ".")
+        // 去处多余
+        .replace(/(^[.-]+|[.-]+$)/, "")
+})

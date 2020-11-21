@@ -6,7 +6,7 @@ import (
 )
 
 type config struct {
-	Kubernetes *KubernetesConfig
+	Kubernetes KubernetesConfig
 }
 
 type KubernetesConfig struct {
