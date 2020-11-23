@@ -1,3 +1,5 @@
 kubernetes:
   api_server: http://apiserver
   token: token
+cd:
+  namespace: app

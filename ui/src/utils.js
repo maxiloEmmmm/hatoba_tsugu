@@ -16,7 +16,7 @@ utils.add("kbid", (str) => {
         // 小写
         .toLowerCase()
         // 移除其他
-        .replace(/[^a-z-.]/g, ".")
+        .replace(/[^a-z0-9-]/g, "-")
         // 去处多余
-        .replace(/(^[.-]+|[.-]+$)/, "")
+        .replace(/(^[0-9-]+|[-]+$|[-]{2,})/, "")
 })

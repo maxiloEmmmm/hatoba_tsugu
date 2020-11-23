@@ -56,7 +56,7 @@ export default {
                 let base = {
                     apiVersion: "v1", kind: "ConfigMap",
                     metadata: {
-                        name: `project.${c.env}.${id}`,
+                        name: `app-${c.env}-${id}`,
                         labels: {
                             role: "app",
                             app: id,

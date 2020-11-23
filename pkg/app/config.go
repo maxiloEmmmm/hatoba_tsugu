@@ -7,11 +7,17 @@ import (
 
 type config struct {
 	Kubernetes KubernetesConfig
+	Cd Cd
 }
 
 type KubernetesConfig struct {
 	ApiServer string `yaml:"api_server"`
 	Token     string `yaml:"token"`
+}
+
+type Cd struct {
+	Namespace string
+	Domain string
 }
 
 var Config *config

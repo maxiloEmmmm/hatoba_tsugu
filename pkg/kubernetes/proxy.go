@@ -18,12 +18,13 @@ func UiProxy() gin.HandlerFunc {
 	}
 
 	proxy := httputil.NewSingleHostReverseProxy(u)
+	token := getToken()
 	return contact.GinHelpHandle(func(c *contact.GinHelp) {
 		uri := &struct {
 			Path string `uri:"path"`
 		}{}
 		c.InValidBindUri(uri)
-		c.Request.Header.Set("Authorization", go_tool.StringJoin("Bearer ", getToken()))
+		c.Request.Header.Set("Authorization", go_tool.StringJoin("Bearer ", token))
 		c.Request.URL.Path = uri.Path
 		proxy.ServeHTTP(c.Writer, c.Request)
 	})
