@@ -28,7 +28,7 @@ export default {
                                 <span slot="left">描述</span><a-input value={file.description} size="small" vOn:change={evt => this.onChange(file, "description", evt.target.value)}/>
                             </ysz-list-item>
                             <ysz-list-item>
-                                <span slot="left">配置</span><a-textarea value={file.config} vOn:change={evt => this.onChange(file, "config", evt.target.value)}></a-textarea>
+                                <span slot="left">配置</span><tool-code style="width:100%" value={file.config} vOn:change={evt => this.onChange(file, "config", evt)}></tool-code>
                             </ysz-list-item>
                         </ysz-list>
                     </a-collapse-panel>)}

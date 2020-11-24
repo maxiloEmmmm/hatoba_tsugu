@@ -1852,10 +1852,10 @@ ant-design-vue@^1.6.3, ant-design-vue@^1.6.4:
     vue-ref "^2.0.0"
     warning "^4.0.0"
 
-antd-vue-tool@^1.0.11-beta6:
-  version "1.0.11-beta6"
-  resolved "https://registry.npmjs.org/antd-vue-tool/-/antd-vue-tool-1.0.11-beta6.tgz#30c1ca9e58022a91ca4f8cb9ee7a58d37800d6ed"
-  integrity sha512-8agdwU4eRLIneg4G7gTA2rkr3qqLKdBNEVnyzpjg5yIHRPxmAOu7gt++Q4P4b7x1wbHUTMftkL/gbLIBkdRvzg==
+antd-vue-tool@^1.0.11-beta7:
+  version "1.0.11-beta7"
+  resolved "https://registry.npmjs.org/antd-vue-tool/-/antd-vue-tool-1.0.11-beta7.tgz#d6dc31cc5599615915ba202484b07e3991ec4c0e"
+  integrity sha512-rspFpSjfZvPAcSX/qEGAeA7Q93CNSO8FZHcEfsMlQM/v1bx7JTNlhD2O7Dd/Azlv92Xj4c6Q6OhA+PgVcHkBGg==
   dependencies:
     "@babel/runtime-corejs3" "^7.11.2"
     "@rollup/plugin-commonjs" "^14.0.0"

@@ -2,6 +2,7 @@ package deploy
 
 import (
 	"fmt"
+	go_tool "github.com/maxiloEmmmm/go-tool"
 	"hatoba_tsugu/pkg/app"
 	"hatoba_tsugu/pkg/hatoba_tsugu"
 	"hatoba_tsugu/pkg/kubernetes"
@@ -23,7 +24,7 @@ func FetchGitProject(git string) (*ProjectCrd, error) {
 
 	if response.StatusCode() == http.StatusNotFound {
 		return nil, nil
-	}else {
+	} else {
 		return response.Result().(*ProjectCrd), nil
 	}
 }
@@ -36,12 +37,12 @@ type Project struct {
 }
 
 type ProjectCrd struct {
-	v1.TypeMeta `json:",omitempty"`
+	v1.TypeMeta   `json:",omitempty"`
 	v1.ObjectMeta `json:"metadata,omitempty"`
-	Spec Project `json:"spec,omitempty"`
+	Spec          Project `json:"spec,omitempty"`
 }
 
-func (p *Project)Launch(env string, image string) error {
+func (p *Project) Launch(env string, image string) error {
 	version := time.Now().Format("15-04-05-20060102")
 	deployment := p.Deployment(env, version, image)
 	response, err := kubernetes.Client.R().SetResult(&appsv1.Deployment{}).
@@ -55,7 +56,7 @@ func (p *Project)Launch(env string, image string) error {
 		if err != nil {
 			return err
 		}
-	}else {
+	} else {
 		old := response.Result().(*appsv1.Deployment)
 		deployment.ObjectMeta.ResourceVersion = old.ObjectMeta.ResourceVersion
 		response, err = kubernetes.Client.R().SetBody(deployment).Put(kubernetes.DeploymentPath.OnePath(deployment.ObjectMeta.Name))
@@ -76,7 +77,7 @@ func (p *Project)Launch(env string, image string) error {
 			if err != nil {
 				return err
 			}
-		}else {
+		} else {
 			old := response.Result().(*apiv1.Service)
 			service.ObjectMeta.ResourceVersion = old.ObjectMeta.ResourceVersion
 			response, err = kubernetes.Client.R().SetBody(service).Put(kubernetes.ServicePath.OnePath(service.ObjectMeta.Name))
@@ -88,19 +89,19 @@ func (p *Project)Launch(env string, image string) error {
 	return p.AppendDestinationRuleVersion(env, version)
 }
 
-func (p *Project)DnsName() string {
+func (p *Project) DnsName() string {
 	return kubernetes.TransferGitDns(p.Git.Url)
 }
 
-func (p *Project)ProjectName(env string) string {
+func (p *Project) ProjectName(env string) string {
 	return fmt.Sprintf("%s-%s-%s", hatoba_tsugu.RoleApp, env, p.DnsName())
 }
 
-func (p *Project)Labels(env string) map[string]string {
+func (p *Project) Labels(env string) map[string]string {
 	return map[string]string{
-		"env": env,
+		"env":  env,
 		"role": hatoba_tsugu.RoleApp,
-		"app": p.DnsName(),
+		"app":  p.DnsName(),
 	}
 }
 
@@ -108,15 +109,17 @@ func (p *Project) ConfigMap(env string) (volumes []apiv1.Volume, mounts []apiv1.
 	volume := apiv1.Volume{}
 	volume.ConfigMap = &apiv1.ConfigMapVolumeSource{LocalObjectReference: apiv1.LocalObjectReference{Name: p.ProjectName(env)}}
 	volume.Name = hatoba_tsugu.VolumeAppConfig
+	volumes = append(volumes, volume)
 	for _, config := range p.Resource.Configs {
 		if config.Env == env {
 			for _, file := range config.Files {
 				mount := apiv1.VolumeMount{
-					Name: hatoba_tsugu.VolumeAppConfig,
+					Name:      hatoba_tsugu.VolumeAppConfig,
 					MountPath: file.Path,
 				}
 				paths := strings.Split(file.Path, "/")
-				mount.SubPath = paths[len(paths) - 1]
+				mount.SubPath = paths[len(paths)-1]
+				mounts = append(mounts, mount)
 			}
 		}
 	}
@@ -161,7 +164,7 @@ func (p *Project) Deployment(env string, version string, image string) *appsv1.D
 			APIVersion: kubernetes.DeploymentPath.ApiVersion(),
 		},
 	}
-	name := p.ProjectName(env)
+	name := go_tool.StringJoin(p.ProjectName(env), "-", version)
 	labels := p.Labels(env)
 	labels["version"] = version
 
@@ -175,24 +178,24 @@ func (p *Project) Deployment(env string, version string, image string) *appsv1.D
 	as.Spec.Template.Spec.Volumes = configVolumes
 	as.Spec.Template.Spec.Containers = []apiv1.Container{
 		{
-			Name: name,
-			Image: image,
+			Name:         name,
+			Image:        image,
 			VolumeMounts: configMounts,
-			Ports: p.ContainerPorts(),
+			Ports:        p.ContainerPorts(),
 		},
 	}
 	return as
 }
 
-func(p *Project)AppendDestinationRuleVersion(env string, version string) error {
+func (p *Project) AppendDestinationRuleVersion(env string, version string) error {
 	dr := &kubernetes.K8sIstioDestinationRule{
 		TypeMeta: v1.TypeMeta{
 			Kind:       kubernetes.DestinationRulePath.Kind,
 			APIVersion: kubernetes.DestinationRulePath.ApiVersion(),
 		},
 		ObjectMeta: v1.ObjectMeta{
-			Name:                       p.ProjectName(env),
-			Namespace:                  kubernetes.DestinationRulePath.Ns,
+			Name:      p.ProjectName(env),
+			Namespace: kubernetes.DestinationRulePath.Ns,
 		},
 	}
 	subset := &v1beta1.Subset{
@@ -201,7 +204,7 @@ func(p *Project)AppendDestinationRuleVersion(env string, version string) error {
 			"version": version,
 		},
 	}
-	response, err := kubernetes.Client.R().SetResult(&v1beta1.DestinationRule{}).
+	response, err := kubernetes.Client.R().SetResult(&kubernetes.K8sIstioDestinationRule{}).
 		Get(kubernetes.DestinationRulePath.OnePath(p.ProjectName(env)))
 	if err != nil {
 		return err
@@ -210,8 +213,12 @@ func(p *Project)AppendDestinationRuleVersion(env string, version string) error {
 	if response.StatusCode() == http.StatusNotFound {
 		dr.Spec.Host = fmt.Sprintf("%s.%s.%s", p.ProjectName(env), app.Config.Cd.Namespace, app.Config.Cd.Domain)
 		dr.Spec.Subsets = []*v1beta1.Subset{subset}
-	}else {
-		dr = response.Result().(*kubernetes.K8sIstioDestinationRule)
+		response, err = kubernetes.Client.R().SetBody(dr).Post(kubernetes.DestinationRulePath.MultiPath())
+		if err != nil {
+			return err
+		}
+	} else {
+		dr := response.Result().(*kubernetes.K8sIstioDestinationRule)
 		dr.Spec.Subsets = append(dr.Spec.Subsets, subset)
 		response, err = kubernetes.Client.R().SetBody(dr).
 			Put(kubernetes.DestinationRulePath.OnePath(p.ProjectName(env)))
@@ -227,9 +234,9 @@ type Git struct {
 }
 
 type Resource struct {
-	Ports   []apiv1.ServicePort `json:"ports"`
-	Configs []*ResourceConfig    `json:"configs"`
-	Dockerfile string `json:"dockerfile"`
+	Ports      []apiv1.ServicePort `json:"ports"`
+	Configs    []*ResourceConfig   `json:"configs"`
+	Dockerfile string              `json:"dockerfile"`
 }
 
 type ResourceConfig struct {

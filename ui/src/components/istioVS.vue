@@ -109,7 +109,7 @@ const istioRoute = {
                             </ysz-list-item>},
                             {title: <ysz-list-item>
                                 <span slot="left">版本</span>
-                                <tool-pick value={data.destination.subset} options={this.drs[data.destination.host.replace(`-${this.env}.apps.svc.cluster.local`, "")]} vOn:change={(item) => this.onSubsetChange(item, data)}><a-button size="small">{data.destination.subset ? data.destination.subset : "选择"}</a-button></tool-pick>
+                                <tool-pick value={data.destination.subset} options={this.drs[data.destination.host]} vOn:change={(item) => this.onSubsetChange(item, data)}><a-button size="small">{data.destination.subset ? data.destination.subset : "选择"}</a-button></tool-pick>
                             </ysz-list-item>},
                             {title: <ysz-list-item>
                                 <span slot="left">权重</span>
@@ -144,11 +144,11 @@ const istioRoute = {
             data.destination.subset = item.value
             this.onChange()
         },
-        fetchDR(app){
+        fetchDR(app, value){
             this.$kb.get(`/apis/apps/v1/namespaces/apps/deployments?labelSelector=${encodeURIComponent(`app=${app},env=${this.env}`)}`).then(response => {
-                this.$set(this.drs, app, [])
+                this.$set(this.drs, value, [])
                 response.data.items.forEach(deployment => {
-                    this.drs[app].push({
+                    this.drs[value].push({
                         label: deployment.metadata.labels.version,
                         value: deployment.metadata.labels.version
                     })
@@ -167,10 +167,11 @@ const istioRoute = {
             this.$kb.get(`/api/v1/namespaces/apps/services?labelSelector=${encodeURIComponent(`env=${this.env}`)}`)
                 .then(response => {
                     this.services = response.data.items.map(service => {
-                        this.fetchDR(service.metadata.labels.app)
+                        let value = `app-${this.env}-${service.metadata.labels.app}.apps.svc.cluster.local`
+                        this.fetchDR(service.metadata.labels.app, value)
                         return {
                             label: service.metadata.labels.app,
-                            value: `${service.metadata.labels.app}-${this.env}.apps.svc.cluster.local`
+                            value
                         }
                     })
                 })
@@ -282,7 +283,7 @@ export default {
                 apiVersion: "networking.istio.io/v1beta1",
                 kind: "VirtualService",
                 metadata: {
-                    name: `${this.id}-${this.env}`,
+                    name: `app-${this.env}-${this.id}`,
                     namespace: "apps"
                 },
                 spec: {
@@ -311,7 +312,7 @@ export default {
                         this.set.gateways = response.data.items.map(item => `${item.metadata.namespace}/${item.metadata.name}`)
                     }),
                 ...(this.id ? [
-                    this.$kb.get(`/apis/networking.istio.io/v1beta1/namespaces/apps/virtualservices/${this.id}-${this.env}`)
+                    this.$kb.get(`/apis/networking.istio.io/v1beta1/namespaces/apps/virtualservices/app-${this.env}-${this.id}`)
                         .then(response => {
                             this.exist = true
                             this.gateways = response.data.spec.gateways

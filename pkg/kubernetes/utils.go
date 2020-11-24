@@ -18,6 +18,8 @@ func TransferDns(name string) string {
 }
 
 func TransferGitDns(gitUrl string) string {
+	removeGit, _ := regexp.Compile("\\.git$")
+	gitUrl = removeGit.ReplaceAllString(gitUrl, "")
 	u, err := url.Parse(gitUrl)
 	if err != nil {
 		return ""

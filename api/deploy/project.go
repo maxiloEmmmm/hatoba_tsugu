@@ -12,7 +12,6 @@ func ProjectLaunch(help *contact.GinHelp) {
 	help.InValidBind(body)
 
 	body.Env = hatoba_tsugu.TransferEnv(body.Env)
-
 	projectCrd, err := deploy.FetchGitProject(body.Git)
 	help.AssetsInValid("fetch", err)
 	help.AssetsInValid("launch", projectCrd.Spec.Launch(body.Env, body.Image))

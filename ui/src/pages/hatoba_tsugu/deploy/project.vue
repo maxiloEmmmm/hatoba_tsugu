@@ -13,6 +13,10 @@ export default {
             vOn:vc={this.onVc}
             vOn:devAc={(item) => this.onAc(item, "dev")}
             vOn:prodAc={(item) => this.onAc(item, "prod")}
+            layout={[
+                {key: "c2", col: 2},
+                {key: "c1", col: 1},
+            ]}
             vOn:delDev={this.onDelDev}></tool-curd>
     },
     data(){
@@ -23,13 +27,13 @@ export default {
                 {field: "description", title: "描述"},
                 {field: "resource.ports", type: "customer", title: "端口", hidden: true, option: {
                     customer_form: 'project-port'
-                }, default: []},
+                }, default: [], layout_key: "c1"},
                 {field: "resource.configs", type: "customer", title: "配置", hidden: true, option: {
                     customer_form: 'project-config'
-                }, default: []},
+                }, default: [], layout_key: "c1"},
                 {field: "resource.dockerfile", type: "code", title: "打包", hidden: true, option: {
                     language: 'dockerfile'
-                }}
+                }, layout_key: "c1"}
             ],
             models: [
                 {key: "add", title: "新增", dispatchArea: "topBar",},

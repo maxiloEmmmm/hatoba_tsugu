@@ -26,7 +26,7 @@ export default {
     },
     methods: {
         async onDelMore(item, table, env){
-            this.$kb.get(`/apis/networking.istio.io/v1beta1/namespaces/apps/virtualservices/${item.name}-${env}`)
+            this.$kb.get(`/apis/networking.istio.io/v1beta1/namespaces/apps/virtualservices/app-${env}-${item.name}`)
                 .then(response => {
                     let useR = []
                     response.data.spec.http.forEach(h => {
@@ -35,11 +35,11 @@ export default {
                         })
                     })
                     if(useR.length > 0) {
-                        this.$kb.get(`/apis/networking.istio.io/v1beta1/namespaces/apps/destinationrules/${item.name}-${env}`)
+                        this.$kb.get(`/apis/networking.istio.io/v1beta1/namespaces/apps/destinationrules/app-${env}-${item.name}`)
                             .then(response => {
                                 response.data.spec.subsets = response.data.spec.subsets.filter(s => useR.includes(s.name))
                                 this.$state.newState(Promise.all([
-                                    this.$kb.put(`/apis/networking.istio.io/v1beta1/namespaces/apps/destinationrules/${item.name}-${env}`, response.data),
+                                    this.$kb.put(`/apis/networking.istio.io/v1beta1/namespaces/apps/destinationrules/app-${env}-${item.name}`, response.data),
                                     this.$kb.delete(`/apis/apps/v1/namespaces/apps/deployments?labelSelector=${encodeURIComponent(`app=${item.name},env=${env},version notin (${useR.join(',')})`)}`),
                                 ]), {})
                             })

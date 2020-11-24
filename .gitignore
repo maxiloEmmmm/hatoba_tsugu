@@ -2,10 +2,16 @@ ui/node_modules
 ui/dist
 
 app.yaml
-
+app-company.yaml
+Dockerfile-Company
+makefile
 .idea
 .vscode
 
 logs
 
+vendor
+
 .DS_Store
+
+test/app.http

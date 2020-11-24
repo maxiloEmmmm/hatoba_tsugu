@@ -1,0 +1,27 @@
+FROM 192.168.1.246:5000/golang:1.13.7 as builder
+WORKDIR /usr/src/app
+ENV GO111MODULE=on
+ENV GOPATH=/pkg/golang
+ENV GOPROXY=https://goproxy.io
+COPY ./api/ ./api
+COPY ./pkg/ ./pkg
+COPY ./route.go .
+COPY ./main.go .
+COPY ./go.mod .
+COPY ./go.sum .
+COPY ./vendor ./vendor
+RUN CGO_ENABLED=0 go build -ldflags "-s -w" -mod=vendor -o server *.go
+
+FROM 192.168.1.246:5000/hairyhenderson/upx:latest as zip
+WORKDIR /app
+COPY --from=builder /usr/src/app/server /app/server
+RUN upx server -5 -o _upx_server && \
+ mv -f _upx_server server && chmod 777 server
+
+FROM scratch as runner
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=zip /app/server /opt/app/
+WORKDIR /opt/app
+COPY ./ui/dist/ ./front
+COPY ./app-company.yaml ./app.yaml
+CMD ["./server"]

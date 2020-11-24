@@ -4,8 +4,8 @@ const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
-// let publicPath = process.env.NODE_ENV === 'production' ?  "/front" : ""
-let publicPath = ""
+let publicPath = process.env.NODE_ENV === 'production' ?  "/front" : ""
+// let publicPath = ""
 module.exports = {
   //子网站使用
   // baseUrl: '/xx/',
