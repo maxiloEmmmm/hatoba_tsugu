@@ -145,7 +145,7 @@ const istioRoute = {
             this.onChange()
         },
         fetchDR(app, value){
-            this.$kb.get(`/apis/apps/v1/namespaces/apps/deployments?labelSelector=${encodeURIComponent(`app=${app},env=${this.env}`)}`).then(response => {
+            this.$api.kubernetes.apis.deployment.list(`app=${app},env=${this.env}`).then(response => {
                 this.$set(this.drs, value, [])
                 response.data.items.forEach(deployment => {
                     this.drs[value].push({
@@ -164,10 +164,10 @@ const istioRoute = {
             this.onChange()
         },
         fetch(){
-            this.$kb.get(`/api/v1/namespaces/apps/services?labelSelector=${encodeURIComponent(`env=${this.env}`)}`)
+            this.$api.kubernetes.api.service.list(`env=${this.env}`)
                 .then(response => {
                     this.services = response.data.items.map(service => {
-                        let value = `app-${this.env}-${service.metadata.labels.app}.apps.svc.cluster.local`
+                        let value = `${this.$utils.kbappid(service.metadata.labels.app, this.env)}.${this.$configs.cd_ns}.${this.$configs.cd_domain}`
                         this.fetchDR(service.metadata.labels.app, value)
                         return {
                             label: service.metadata.labels.app,
@@ -280,10 +280,10 @@ export default {
             }
 
             let item = {
-                apiVersion: "networking.istio.io/v1beta1",
-                kind: "VirtualService",
+                apiVersion: this.$api.kubernetes.apis.istio.vs.path.apiVersion(),
+                kind: this.$api.kubernetes.apis.istio.vs.path.option.kind,
                 metadata: {
-                    name: `app-${this.env}-${this.id}`,
+                    name: this.$utils.kbappid(this.id, this.env),
                     namespace: "apps"
                 },
                 spec: {
@@ -298,21 +298,21 @@ export default {
             }
 
             if(this.exist) {
-                let response = await this.$kb.get(`/apis/networking.istio.io/v1beta1/namespaces/apps/virtualservices/${this.id}-${this.env}`)
+                let response = await this.$api.kubernetes.apis.istio.vs.get(this.$utils.kbappid(this.id, this.env))
                 response.data.spec = item.spec
-                this.$state.newState(this.$kb.put(`/apis/networking.istio.io/v1beta1/namespaces/apps/virtualservices/${response.data.metadata.name}`, response.data), {})
+                this.$state.newState(this.$api.kubernetes.apis.istio.vs.update(response.data), {})
             }else {
-                this.$state.newState(this.$kb.post(`/apis/networking.istio.io/v1beta1/namespaces/apps/virtualservices`, item), {})
+                this.$state.newState(this.$api.kubernetes.apis.istio.vs.create(item), {})
             }
         },
         fetch(){
             Promise.all([
-                this.$kb.get(`/apis/networking.istio.io/v1beta1/gateways`)
+                this.$api.kubernetes.apis.istio.gateway.list()
                     .then(response => {
                         this.set.gateways = response.data.items.map(item => `${item.metadata.namespace}/${item.metadata.name}`)
                     }),
                 ...(this.id ? [
-                    this.$kb.get(`/apis/networking.istio.io/v1beta1/namespaces/apps/virtualservices/app-${this.env}-${this.id}`)
+                    this.$api.kubernetes.apis.istio.vs.get(this.$utils.kbappid(this.id, this.env))
                         .then(response => {
                             this.exist = true
                             this.gateways = response.data.spec.gateways

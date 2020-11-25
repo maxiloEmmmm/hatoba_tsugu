@@ -35,10 +35,12 @@ import {
     Row,
     Col,
     Menu,
-    Affix
+    Affix,
+    Space
 } from 'ant-design-vue'
 //Config-provider
 maxiloVue.vue.use(Checkbox)
+maxiloVue.vue.use(Space)
 maxiloVue.vue.use(Statistic)
 maxiloVue.vue.use(Button)
 maxiloVue.vue.use(ConfigProvider)

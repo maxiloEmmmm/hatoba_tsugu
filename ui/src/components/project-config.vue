@@ -13,8 +13,11 @@ export default {
     name: "project-config",
     render(){
         return <a-collapse>
-            {this.env.map(e => <a-collapse-panel key={e.env} header={e.env}>
-                <a-icon slot="extra" type="setting" vOn:click={(evt) => this.onAddConfig(evt, e)} />
+            {this.env.map((e, index) => <a-collapse-panel key={e.env} header={e.env}>
+                <a-space slot="extra">
+                    <a-icon type="setting" vOn:click={(evt) => this.onAddConfig(evt, e, index)} />
+                    <a-icon type="cloud-sync" vOn:click={(evt) => this.onSyncConfig(evt, e, index)} />
+                </a-space>
                 <a-collapse tabPosition="left">
                     {e.files.map((file, file_index) => <a-collapse-panel key={file_index}>
                         <ysz-list-item slot="header">
@@ -60,6 +63,15 @@ export default {
         onAddConfig(evt, e){
             evt.stopPropagation()
             e.files.push({path: "", config: "", description: ""})
+        },
+        onSyncConfig(evt, e, index){
+            evt.stopPropagation()
+            this.env.forEach((env, e_index) => {
+                if(e_index != index) {
+                    let source_files = env.files.map(file => file.path)
+                    env.files.push(...e.files.filter(file => !source_files.includes(file.path)))
+                }
+            })
         },
         onChange(file, k, v){
             file[k] = v

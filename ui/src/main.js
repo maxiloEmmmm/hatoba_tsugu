@@ -10,7 +10,8 @@ import "./store"
 import "./http"
 import "./utils"
 import "./route"
-
+import "./api"
+import "./config"
 maxiloVue.vue.config.productionTip = true
 maxiloVue.vue.use(mvyu)
 maxiloVue.vue.use(tool)

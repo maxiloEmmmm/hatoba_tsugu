@@ -1,18 +1,21 @@
 package kubernetes
 
 import (
-	go_tool "github.com/maxiloEmmmm/go-tool"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/go-resty/resty/v2"
 	"net/url"
 	"regexp"
 	"strings"
 )
 
 func TransferDns(name string) string {
-	otherReg, _ := regexp.Compile("[^a-z0-9-]")
-	trimReg, _ := regexp.Compile("(^[0-9-]+|[-]+$|[-]{2,})")
+	otherReg, _ := regexp.Compile("[^a-z0-9]")
+	trimReg, _ := regexp.Compile("(^[0-9-]+)")
 
 	name = strings.ToLower(name)
-	name = otherReg.ReplaceAllString(name, "-")
+	name = otherReg.ReplaceAllString(name, "")
 	name = trimReg.ReplaceAllString(name, "")
 	return name
 }
@@ -24,6 +27,18 @@ func TransferGitDns(gitUrl string) string {
 	if err != nil {
 		return ""
 	}
-	pathReg, _ := regexp.Compile("(^[\\/]+|[\\/]+$)")
-	return TransferDns(go_tool.StringJoin(u.Host, ".", strings.Join(strings.Split(pathReg.ReplaceAllString(u.Path, ""), "/"), "-")))
+	return TransferDns(u.Path)
+}
+
+func ResponseOk(response *resty.Response) error {
+	if response.StatusCode() >= 300 && response.StatusCode() != 404 {
+		msg := &InValidMessage{}
+		err := json.Unmarshal(response.Body(), msg)
+		if err != nil {
+			return errors.New(fmt.Sprintf("Unmarshal error message: %s", response.String()))
+		}
+		return errors.New(fmt.Sprintf("code: %d, message: %s", msg.Code, msg.Message))
+	} else {
+		return nil
+	}
 }

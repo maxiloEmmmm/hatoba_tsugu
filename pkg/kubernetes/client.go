@@ -108,3 +108,8 @@ func FullUpdateOrCreate(point K8Path, name string, data interface{}) error {
 
 	return nil
 }
+
+type InValidMessage struct {
+	Message string
+	Code    int
+}

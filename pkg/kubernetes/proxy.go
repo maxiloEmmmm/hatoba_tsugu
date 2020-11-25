@@ -1,12 +1,14 @@
 package kubernetes
 
 import (
+	"crypto/tls"
 	"github.com/gin-gonic/gin"
 	go_tool "github.com/maxiloEmmmm/go-tool"
 	"github.com/maxiloEmmmm/go-web/contact"
 	"hatoba_tsugu/pkg/app"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"net/http/httputil"
 	"net/url"
 )
@@ -18,6 +20,9 @@ func UiProxy() gin.HandlerFunc {
 	}
 
 	proxy := httputil.NewSingleHostReverseProxy(u)
+	proxy.Transport = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	token := getToken()
 	return contact.GinHelpHandle(func(c *contact.GinHelp) {
 		uri := &struct {

@@ -6,11 +6,10 @@ export default {
         return <tool-curd httpKey="cloud" title="项目" 
             columns={this.cols}
             models={this.models}
-            fetchUrl="/apis/deploy.hatobatsugu.gsc/v1/projects"
+            fetchUrl={this.$api.kubernetes.hatobatsugu.deploy.project.url.multi}
             fetchTransform={this.fetchTransform}
             vOn:add={this.onAdd}
             vOn:update={this.onAdd}
-            vOn:vc={this.onVc}
             vOn:devAc={(item) => this.onAc(item, "dev")}
             vOn:prodAc={(item) => this.onAc(item, "prod")}
             layout={[
@@ -38,6 +37,9 @@ export default {
             models: [
                 {key: "add", title: "新增", dispatchArea: "topBar",},
                 {key: "update", title: "修改",},
+                {key: "prodAc", title: "生产访问控制", type: "api", api: "event"},
+                {key: "devAc", title: "开发访问控制", type: "api", api: "event"},
+                {key: "delDev", title: "清除旧版本", type: "api", api: "event"}
             ]
         }
     },
@@ -45,8 +47,7 @@ export default {
         onAdd(data){
             let id = ""
             try {
-                let gitUrl = new URL(data.git.url)
-                id = this.$utils.kbid(`${gitUrl.host}.${gitUrl.pathname.replace(/(^[\/]+|[\/]+$)/, "").split("/").join("-")}`)
+                id = this.$utils.kbgitid(data.git.url)
             } catch (error) {
                 alert(error)
                 return
@@ -60,7 +61,7 @@ export default {
                 let base = {
                     apiVersion: "v1", kind: "ConfigMap",
                     metadata: {
-                        name: `app-${c.env}-${id}`,
+                        name: this.$utils.kbappid(id, c.env),
                         labels: {
                             role: "app",
                             app: id,
@@ -73,13 +74,13 @@ export default {
                     base.data[paths[paths.length - 1]] = file.config
                 })
 
-                this.$kb.fullUpdateOrCreate(`/api/v1/namespaces/apps/configmaps`, base)
+                this.$api.kubernetes.api.configmap.fullUpdateOrCreate(base)
                     .catch(e => {
                         this.$notification.info({description: e.response.data.message})
                     })
             })
 
-            this.$kb.fullUpdateOrCreate(`/apis/deploy.hatobatsugu.gsc/v1/namespaces/apps/projects`, {
+            this.$api.kubernetes.hatobatsugu.deploy.project.fullUpdateOrCreate({
                 spec: data,
                 apiVersion: "deploy.hatobatsugu.gsc/v1", kind: "Project",
                 metadata: {
@@ -91,7 +92,8 @@ export default {
                 })
         },
         async onDelMore(item, table, env){
-            this.$kb.get(`/apis/networking.istio.io/v1beta1/namespaces/apps/virtualservices/${item.name}-${env}`)
+            let id = this.$utils.kbgitid(item.git.url)
+            this.$api.kubernetes.apis.istio.vs.get(this.$utils.kbappid(id, env))
                 .then(response => {
                     let useR = []
                     response.data.spec.http.forEach(h => {
@@ -100,12 +102,12 @@ export default {
                         })
                     })
                     if(useR.length > 0) {
-                        this.$kb.get(`/apis/networking.istio.io/v1beta1/namespaces/apps/destinationrules/${item.name}-${env}`)
+                        this.$api.kubernetes.apis.istio.dr.get(this.$utils.kbappid(id, env))
                             .then(response => {
                                 response.data.spec.subsets = response.data.spec.subsets.filter(s => useR.includes(s.name))
                                 this.$state.newState(Promise.all([
-                                    this.$kb.put(`/apis/networking.istio.io/v1beta1/namespaces/apps/destinationrules/${item.name}-${env}`, response.data),
-                                    this.$kb.delete(`/apis/apps/v1/namespaces/apps/deployments?labelSelector=${encodeURIComponent(`app=${item.name},env=${env},version notin (${useR.join(',')})`)}`),
+                                    this.$api.kubernetes.apis.istio.dr.update(response.data),
+                                    this.$api.kubernetes.apis.deployment.deleteLabel(`app=${id},env=${env},version notin (${useR.join(',')})`),
                                 ]), {})
                             })
                     }
@@ -122,21 +124,7 @@ export default {
                 width: 1024,
                 footer: null,
                 content: h('istio-vs', {
-                    props: {id: item.name, env},
-                    on: {done: () => {
-                        modal.destroy()
-                        table.refresh()
-                    }}
-                })
-            })
-        },
-        async onVc({item, table}){
-            const h = this.$createElement
-            let modal = this.$info({
-                title: '版本',
-                width: 1024,
-                content: h('business-app-traffic', {
-                    props: {data: item},
+                    props: {id: this.$utils.kbgitid(item.git.url), env},
                     on: {done: () => {
                         modal.destroy()
                         table.refresh()

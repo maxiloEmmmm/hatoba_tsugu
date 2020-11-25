@@ -1,6 +1,7 @@
 package deploy
 
 import (
+	"errors"
 	"fmt"
 	go_tool "github.com/maxiloEmmmm/go-tool"
 	"hatoba_tsugu/pkg/app"
@@ -23,7 +24,7 @@ func FetchGitProject(git string) (*ProjectCrd, error) {
 	}
 
 	if response.StatusCode() == http.StatusNotFound {
-		return nil, nil
+		return nil, errors.New("not found")
 	} else {
 		return response.Result().(*ProjectCrd), nil
 	}
@@ -49,11 +50,15 @@ func (p *Project) Launch(env string, image string) error {
 		Get(kubernetes.DeploymentPath.OnePath(deployment.ObjectMeta.Name))
 	if err != nil {
 		return err
+	} else if err = kubernetes.ResponseOk(response); err != nil {
+		return err
 	}
 
 	if response.StatusCode() == http.StatusNotFound {
 		response, err = kubernetes.Client.R().SetBody(deployment).Post(kubernetes.DeploymentPath.MultiPath())
 		if err != nil {
+			return err
+		} else if err = kubernetes.ResponseOk(response); err != nil {
 			return err
 		}
 	} else {
@@ -62,28 +67,35 @@ func (p *Project) Launch(env string, image string) error {
 		response, err = kubernetes.Client.R().SetBody(deployment).Put(kubernetes.DeploymentPath.OnePath(deployment.ObjectMeta.Name))
 		if err != nil {
 			return err
+		} else if err = kubernetes.ResponseOk(response); err != nil {
+			return err
 		}
 	}
 
-	for _, service := range p.Services() {
-		response, err := kubernetes.Client.R().SetResult(&apiv1.Service{}).
-			Get(kubernetes.ServicePath.OnePath(service.ObjectMeta.Name))
+	service := p.Service(env)
+	response, err = kubernetes.Client.R().SetResult(&apiv1.Service{}).
+		Get(kubernetes.ServicePath.OnePath(service.ObjectMeta.Name))
+	if err != nil {
+		return err
+	} else if err = kubernetes.ResponseOk(response); err != nil {
+		return err
+	}
+
+	if response.StatusCode() == http.StatusNotFound {
+		response, err = kubernetes.Client.R().SetBody(service).Post(kubernetes.ServicePath.MultiPath())
 		if err != nil {
 			return err
+		} else if err = kubernetes.ResponseOk(response); err != nil {
+			return err
 		}
-
-		if response.StatusCode() == http.StatusNotFound {
-			response, err = kubernetes.Client.R().SetBody(service).Post(kubernetes.ServicePath.MultiPath())
-			if err != nil {
-				return err
-			}
-		} else {
-			old := response.Result().(*apiv1.Service)
-			service.ObjectMeta.ResourceVersion = old.ObjectMeta.ResourceVersion
-			response, err = kubernetes.Client.R().SetBody(service).Put(kubernetes.ServicePath.OnePath(service.ObjectMeta.Name))
-			if err != nil {
-				return err
-			}
+	} else {
+		old := response.Result().(*apiv1.Service)
+		service.ObjectMeta.ResourceVersion = old.ObjectMeta.ResourceVersion
+		response, err = kubernetes.Client.R().SetBody(service).Put(kubernetes.ServicePath.OnePath(service.ObjectMeta.Name))
+		if err != nil {
+			return err
+		} else if err = kubernetes.ResponseOk(response); err != nil {
+			return err
 		}
 	}
 	return p.AppendDestinationRuleVersion(env, version)
@@ -94,7 +106,7 @@ func (p *Project) DnsName() string {
 }
 
 func (p *Project) ProjectName(env string) string {
-	return fmt.Sprintf("%s-%s-%s", hatoba_tsugu.RoleApp, env, p.DnsName())
+	return fmt.Sprintf("%s-%s", env, p.DnsName())
 }
 
 func (p *Project) Labels(env string) map[string]string {
@@ -136,25 +148,21 @@ func (p *Project) ContainerPorts() (ports []apiv1.ContainerPort) {
 	return
 }
 
-func (p *Project) Services() []*apiv1.Service {
-	ass := make([]*apiv1.Service, 0, len(hatoba_tsugu.Envs))
-	for _, env := range hatoba_tsugu.Envs {
-		as := &apiv1.Service{
-			TypeMeta: v1.TypeMeta{
-				Kind:       kubernetes.ServicePath.Kind,
-				APIVersion: kubernetes.ServicePath.ApiVersion(),
-			},
-		}
-		labels := p.Labels(env)
-
-		as.ObjectMeta.Name = p.ProjectName(env)
-		as.ObjectMeta.Namespace = app.Config.Cd.Namespace
-		as.ObjectMeta.Labels = labels
-		as.Spec.Selector = labels
-		as.Spec.Ports = p.Resource.Ports
-		ass = append(ass, as)
+func (p *Project) Service(env string) *apiv1.Service {
+	as := &apiv1.Service{
+		TypeMeta: v1.TypeMeta{
+			Kind:       kubernetes.ServicePath.Kind,
+			APIVersion: kubernetes.ServicePath.ApiVersion(),
+		},
 	}
-	return ass
+	labels := p.Labels(env)
+
+	as.ObjectMeta.Name = p.ProjectName(env)
+	as.ObjectMeta.Namespace = app.Config.Cd.Namespace
+	as.ObjectMeta.Labels = labels
+	as.Spec.Selector = labels
+	as.Spec.Ports = p.Resource.Ports
+	return as
 }
 
 func (p *Project) Deployment(env string, version string, image string) *appsv1.Deployment {
@@ -208,6 +216,8 @@ func (p *Project) AppendDestinationRuleVersion(env string, version string) error
 		Get(kubernetes.DestinationRulePath.OnePath(p.ProjectName(env)))
 	if err != nil {
 		return err
+	} else if err = kubernetes.ResponseOk(response); err != nil {
+		return err
 	}
 
 	if response.StatusCode() == http.StatusNotFound {
@@ -216,6 +226,8 @@ func (p *Project) AppendDestinationRuleVersion(env string, version string) error
 		response, err = kubernetes.Client.R().SetBody(dr).Post(kubernetes.DestinationRulePath.MultiPath())
 		if err != nil {
 			return err
+		} else if err = kubernetes.ResponseOk(response); err != nil {
+			return err
 		}
 	} else {
 		dr := response.Result().(*kubernetes.K8sIstioDestinationRule)
@@ -223,6 +235,8 @@ func (p *Project) AppendDestinationRuleVersion(env string, version string) error
 		response, err = kubernetes.Client.R().SetBody(dr).
 			Put(kubernetes.DestinationRulePath.OnePath(p.ProjectName(env)))
 		if err != nil {
+			return err
+		} else if err = kubernetes.ResponseOk(response); err != nil {
 			return err
 		}
 	}

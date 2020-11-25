@@ -15,7 +15,7 @@ func InitRoute() *gin.Engine {
 
 	if contact.Config.App.Mode == gin.ReleaseMode {
 		engine.Use(gzip.Gzip(gzip.DefaultCompression))
-		engine.StaticFS("/front", http.Dir("./front"))
+		engine.StaticFS("/ui", http.Dir("./front"))
 	}
 
 	engine.Any("/cloud-api/*path", kubernetes.UiProxy())
