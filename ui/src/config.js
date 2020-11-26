@@ -5,7 +5,8 @@ config.add("baseURL", process.env.VUE_APP_BASEURL ? process.env.VUE_APP_BASEURL 
 let base = {
     cd_ns: "apps",
     cd_domain: "svc.cluster.local",
-    cd_endpoint_ns: "endpoint"
+    cd_endpoint_ns: "endpoint",
+    role_app: "app"
 }
 config.merge(base)
 

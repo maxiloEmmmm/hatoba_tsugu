@@ -204,6 +204,7 @@ func (p *Project) AppendDestinationRuleVersion(env string, version string) error
 		ObjectMeta: v1.ObjectMeta{
 			Name:      p.ProjectName(env),
 			Namespace: kubernetes.DestinationRulePath.Ns,
+			Labels:    p.Labels(env),
 		},
 	}
 	subset := &v1beta1.Subset{

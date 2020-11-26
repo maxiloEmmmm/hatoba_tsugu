@@ -10,6 +10,7 @@ export default {
             fetchTransform={this.fetchTransform}
             vOn:add={this.onAdd}
             vOn:update={this.onAdd}
+            vOn:delProject={this.onDelProject}
             vOn:devAc={(item) => this.onAc(item, "dev")}
             vOn:prodAc={(item) => this.onAc(item, "prod")}
             layout={[
@@ -39,6 +40,7 @@ export default {
                 {key: "update", title: "修改",},
                 {key: "prodAc", title: "生产访问控制", type: "api", api: "event"},
                 {key: "devAc", title: "开发访问控制", type: "api", api: "event"},
+                {key: "delProject", title: "清除项目资源", type: "api", api: "event"},
                 {key: "delDev", title: "清除旧版本", type: "api", api: "event"}
             ]
         }
@@ -117,6 +119,15 @@ export default {
             this.onDelMore(item, table, "dev")
             // this.onDelMore(item, table, "prod")
         },
+        onDelProject({item}){
+            let id = this.$utils.kbgitid(item.git.url)
+            this.$api.kubernetes.api.configmap.deleteLabel(`app=${id}`)
+            this.$api.kubernetes.api.service.delete(this.$utils.kbappid(id, "dev"))
+            this.$api.kubernetes.api.service.delete(this.$utils.kbappid(id, "prod"))
+            this.$api.kubernetes.apis.istio.vs.deleteLabel(`app=${id}`)
+            this.$api.kubernetes.apis.istio.dr.deleteLabel(`app=${id}`)
+            this.$api.kubernetes.apis.deployment.deleteLabel(`app=${id}`)
+        },
         async onAc({item}, env){
             const h = this.$createElement
             let modal = this.$info({
@@ -124,7 +135,7 @@ export default {
                 width: 1024,
                 footer: null,
                 content: h('istio-vs', {
-                    props: {id: this.$utils.kbgitid(item.git.url), env},
+                    props: {id: this.$utils.kbgitid(item.git.url), env, ports: item.resource.ports},
                     on: {done: () => {
                         modal.destroy()
                         table.refresh()

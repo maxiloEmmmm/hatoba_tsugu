@@ -105,7 +105,13 @@ const istioRoute = {
                         {title: <tw-list-item1 items={[
                             {title: <ysz-list-item>
                                 <span slot="left">目标</span>
-                                <tool-pick options={this.services} value={data.destination.host} vOn:change={(item) => this.onServiceChange(item, data)}><a-button size="small">{data.destination.host ? data.destination.host.replace(`-${this.env}.apps.svc.cluster.local`, "") : "选择"}</a-button></tool-pick>
+                                <ysz-list-item-top>
+                                    <tool-pick slot="top" options={this.services} value={data.destination.host} vOn:change={(item) => this.onServiceChange(item, data)}><a-button size="small">{data.destination.host ? data.destination.host.replace(`-${this.env}.apps.svc.cluster.local`, "") : "选择"}</a-button></tool-pick>
+                                    <ysz-list-item>
+                                        <span slot="left">端口</span>
+                                        <tool-select options={this._ports} value={data.destination.port.number} vOn:change={v => data.destination.port.number = v}></tool-select>
+                                    </ysz-list-item>
+                                </ysz-list-item-top>
                             </ysz-list-item>},
                             {title: <ysz-list-item>
                                 <span slot="left">版本</span>
@@ -127,11 +133,24 @@ const istioRoute = {
         value: {type: Array, default(){
             return []
         }},
+        ports: {type: Array, default(){
+            return []
+        }},
         env: String,
         disabled: {type: Boolean, default: false},
         size: {type: String, default: "small"}
     },
     created(){this.fetch()},
+    computed: {
+        _ports(){
+            return this.ports.map(port => {
+                return {
+                    label: port.name,
+                    value: port.port
+                }
+            })
+        }
+    },
     methods: {
         onWeight(e){
             data.weight = e.target.value
@@ -177,7 +196,7 @@ const istioRoute = {
                 })
         },
         onChange(){
-            this.$emit("change", this.dataset.map(d => {
+            this.$emit("change", this.dataset.filter(d => !!d.destination.port.number).map(d => {
                 let base = {
                     destination: {
                         ...d.destination
@@ -195,7 +214,7 @@ const istioRoute = {
             }))
         },
         onNew(){
-            this.dataset.push({destination: {host: "", subset: ""}, weight: 0})
+            this.dataset.push({destination: {host: "", subset: "", port: {number: ""}}, weight: 0})
         }
     },
     data(){
@@ -238,7 +257,7 @@ export default {
                         </ysz-list-item>
                         <ysz-list-item>
                             <span slot="left">route</span>
-                            <istio-route value={this.http.route} env={this.env} vOn:change={v => this.http.route = v}></istio-route>
+                            <istio-route value={this.http.route} env={this.env} vOn:change={v => this.http.route = v} ports={this.ports}></istio-route>
                         </ysz-list-item>
                     </ysz-list>
                 </ysz-list-item>
@@ -270,7 +289,8 @@ export default {
     props: {
         id: "",
         project: "",
-        env: ""
+        env: "",
+        ports: {type: Array, default: () => []}
     },
     methods: {
         async end(){
@@ -284,7 +304,12 @@ export default {
                 kind: this.$api.kubernetes.apis.istio.vs.path.option.kind,
                 metadata: {
                     name: this.$utils.kbappid(this.id, this.env),
-                    namespace: "apps"
+                    namespace: "apps",
+                    labels: {
+                        app: this.id,
+                        env: this.env,
+                        role: this.$configs.role_app
+                    }
                 },
                 spec: {
                     hosts: this.hosts,
