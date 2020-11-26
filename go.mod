@@ -8,6 +8,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/go-resty/resty/v2 v2.3.0
 	github.com/golang/protobuf v1.4.3 // indirect
+	github.com/gorilla/websocket v1.4.2
 	github.com/maxiloEmmmm/go-tool v0.0.6
 	github.com/maxiloEmmmm/go-web v0.0.19-beta10
 	github.com/stretchr/testify v1.6.1
@@ -18,5 +19,4 @@ require (
 	istio.io/api v0.0.0-20201120175956-c2df7c41fd8e
 	k8s.io/api v0.19.4
 	k8s.io/apimachinery v0.19.4
-	k8s.io/client-go v11.0.0+incompatible // indirect
 )

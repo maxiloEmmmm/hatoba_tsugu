@@ -19,6 +19,7 @@ func InitRoute() *gin.Engine {
 	}
 
 	engine.Any("/cloud-api/*path", kubernetes.UiProxy())
+	engine.Any("/cloud-ws/*path", kubernetes.WsProxy())
 
 	engine.POST("/launch", contact.GinHelpHandle(deploy.ProjectLaunch))
 	engine.GET("/dockerfile", contact.GinHelpHandle(deploy.ProjectBuildConf))
