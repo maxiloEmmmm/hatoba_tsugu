@@ -3,7 +3,7 @@ package deploy
 import (
 	"errors"
 	"fmt"
-	go_tool "github.com/maxiloEmmmm/go-tool"
+	"github.com/google/uuid"
 	"hatoba_tsugu/pkg/app"
 	"hatoba_tsugu/pkg/hatoba_tsugu"
 	"hatoba_tsugu/pkg/kubernetes"
@@ -172,7 +172,9 @@ func (p *Project) Deployment(env string, version string, image string) *appsv1.D
 			APIVersion: kubernetes.DeploymentPath.ApiVersion(),
 		},
 	}
-	name := go_tool.StringJoin(p.ProjectName(env), "-", version)
+
+	// 名字无用
+	name := uuid.New().String()
 	labels := p.Labels(env)
 	labels["version"] = version
 

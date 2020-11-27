@@ -8,6 +8,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/go-resty/resty/v2 v2.3.0
 	github.com/golang/protobuf v1.4.3 // indirect
+	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2
 	github.com/maxiloEmmmm/go-tool v0.0.6
 	github.com/maxiloEmmmm/go-web v0.0.19-beta11

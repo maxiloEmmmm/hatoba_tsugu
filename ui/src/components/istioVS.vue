@@ -359,7 +359,7 @@ export default {
         onNewHttp(){
             this.https.push({
                 name: this.$utils.tool.random("name-"),
-                match: {},
+                match: [],
                 route: [],
                 rewrite: {
                     uri: ""
