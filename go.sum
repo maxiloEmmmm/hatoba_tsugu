@@ -21,6 +21,8 @@ github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
 github.com/casbin/casbin/v2 v2.14.2 h1:j29dbpZsVBL7GsBdoSev4nME/24YOircZXRpfd3wAl0=
 github.com/casbin/casbin/v2 v2.14.2/go.mod h1:XXtYGrs/0zlOsJMeRteEdVi/FsB0ph7KgNfjoCoJUD8=
+github.com/casbin/casbin/v2 v2.17.0 h1:W5QwQdYp3wfP9Je4Z1FQTIC1BFWrAyEENPqn57yW/gQ=
+github.com/casbin/casbin/v2 v2.17.0/go.mod h1:XXtYGrs/0zlOsJMeRteEdVi/FsB0ph7KgNfjoCoJUD8=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash v1.1.0 h1:a6HrQnmkObjyL+Gs60czilIUGqrzKutQD6XZog3p+ko=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
@@ -194,6 +196,8 @@ github.com/maxiloEmmmm/go-tool v0.0.6 h1:GQALPrBLgma30WxQIyabrWKb93J8eZBHQhituvc
 github.com/maxiloEmmmm/go-tool v0.0.6/go.mod h1:OGu5R94D8011Zo/7jbPzILRsqRsyzn9/kBKUFbWV2Iw=
 github.com/maxiloEmmmm/go-web v0.0.19-beta10 h1:f7BybZxNCzJBfKTyANAVQHAu2ZHBBIWI8m59JAnDCaM=
 github.com/maxiloEmmmm/go-web v0.0.19-beta10/go.mod h1:oPnVVJ/qBEmM2eMuG6bm0O4Vo9WT4n2EX5eacQz2kVU=
+github.com/maxiloEmmmm/go-web v0.0.19-beta11 h1:5/XGLD9LxRz3cNHOP4MrtiCZSQ2/9hO5wpz2Xr0FK+Q=
+github.com/maxiloEmmmm/go-web v0.0.19-beta11/go.mod h1:9iumLPiFz0R2A3fErqCUvBYw1bLi4th3ObzId0YcLpw=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
 github.com/mitchellh/mapstructure v1.3.3/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=

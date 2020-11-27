@@ -1,6 +1,5 @@
 import maxiloVue from 'maxilo-vue'
 let utils = maxiloVue.make("utils")
-import {merge} from "lodash"
 
 utils.add("btom", (bytes) => {
     if (bytes === 0) return '0 B';
@@ -88,7 +87,8 @@ utils.add("K8sApi", function(path) {
         fullUpdateOrCreate: async (data) => {
             try {
                 let response = await maxiloVue.app.$kb.get(path.onePath(data.metadata.name))
-                await maxiloVue.app.$kb.put(path.onePath(data.metadata.name), merge(response.data, data))
+                data.metadata.resourceVersion = response.data.metadata.resourceVersion
+                await maxiloVue.app.$kb.put(path.onePath(data.metadata.name), data)
             }catch(e) {
                 if(e.response.data.code == 404) {
                     try {

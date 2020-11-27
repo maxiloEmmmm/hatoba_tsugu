@@ -9,6 +9,7 @@ import {
     InputNumber,
     Spin,
     Table,
+    Alert,
     Modal,
     Select,
     Collapse,
@@ -39,6 +40,7 @@ import {
     Space
 } from 'ant-design-vue'
 //Config-provider
+maxiloVue.vue.use(Alert)
 maxiloVue.vue.use(Checkbox)
 maxiloVue.vue.use(Space)
 maxiloVue.vue.use(Statistic)

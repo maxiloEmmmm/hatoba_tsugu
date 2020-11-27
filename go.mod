@@ -10,7 +10,7 @@ require (
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/maxiloEmmmm/go-tool v0.0.6
-	github.com/maxiloEmmmm/go-web v0.0.19-beta10
+	github.com/maxiloEmmmm/go-web v0.0.19-beta11
 	github.com/stretchr/testify v1.6.1
 	github.com/ugorji/go v1.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9 // indirect
