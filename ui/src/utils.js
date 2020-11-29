@@ -11,6 +11,19 @@ utils.add("btom", (bytes) => {
     return num.toPrecision(3) + ' ' + sizes[i];
 })
 
+utils.add("makeKey", (arr, key) => {
+    let obj = {}
+    arr.forEach(item => {
+        obj[utils.tool.get(item, key)] = item
+    })
+    return obj
+})
+
+utils.add("setInterval", (func, sec) => {
+    func()
+    return setInterval(func, sec * 1000)
+})
+
 utils.add("kbid", (str) => {
     //[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*
     return str
@@ -46,7 +59,7 @@ utils.add("K8sPath", function(option) {
     this.option = Object.assign(utils.K8sPathOption(), option)
 
     this.multiPath = () => {
-        return `/${this.option.group}${this.option.api ? `/${this.option.api}` : ""}/${this.option.version}/namespaces/${this.option.ns}/${this.option.plural}`
+        return `/${this.option.group}${this.option.api ? `/${this.option.api}` : ""}/${this.option.version}${this.option.ns ? `/namespaces/${this.option.ns}` : ""}/${this.option.plural}`
     }
     
     this.onePath = (name) =>  {

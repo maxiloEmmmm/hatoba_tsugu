@@ -13,6 +13,7 @@ export default {
             vOn:delProject={this.onDelProject}
             vOn:devAc={(item) => this.onAc(item, "dev")}
             vOn:prodAc={(item) => this.onAc(item, "prod")}
+            vOn:space={this.onSpace}
             layout={[
                 {key: "c2", col: 2},
                 {key: "c1", col: 1},
@@ -38,6 +39,7 @@ export default {
             models: [
                 {key: "add", title: "新增", dispatchArea: "topBar",},
                 {key: "update", title: "修改",},
+                {key: "space", title: "空间", type: "api", api: "event"},
                 {key: "prodAc", title: "生产访问控制", type: "api", api: "event"},
                 {key: "devAc", title: "开发访问控制", type: "api", api: "event"},
                 {key: "delProject", title: "清除项目资源", type: "api", api: "event"},
@@ -46,6 +48,9 @@ export default {
         }
     },
     methods: {
+        onSpace({item}){
+            this.$router.push(`/hatoba_tsugu_deploy/project/${this.$utils.kbgitid(item.git.url)}`)
+        },
         onAdd(data){
             let id = ""
             try {
