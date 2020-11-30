@@ -144,6 +144,7 @@ func (p *Project) ContainerPorts() (ports []apiv1.ContainerPort) {
 		por.Name = port.Name
 		por.ContainerPort = port.TargetPort.IntVal
 		por.Protocol = port.Protocol
+		ports = append(ports, por)
 	}
 	return
 }
