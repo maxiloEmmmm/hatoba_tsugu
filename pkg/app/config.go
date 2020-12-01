@@ -7,7 +7,8 @@ import (
 
 type config struct {
 	Kubernetes KubernetesConfig
-	Cd Cd
+	Cd         Cd
+	Istio      Istio
 }
 
 type KubernetesConfig struct {
@@ -17,7 +18,11 @@ type KubernetesConfig struct {
 
 type Cd struct {
 	Namespace string
-	Domain string
+	Domain    string
+}
+
+type Istio struct {
+	Kiali string `json:"kiali"`
 }
 
 var Config *config

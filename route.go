@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/maxiloEmmmm/go-web/contact"
+	"hatoba_tsugu/api/config"
 	"hatoba_tsugu/api/deploy"
 	"hatoba_tsugu/pkg/kubernetes"
 	"net/http"
@@ -23,5 +24,6 @@ func InitRoute() *gin.Engine {
 
 	engine.POST("/launch", contact.GinHelpHandle(deploy.ProjectLaunch))
 	engine.GET("/dockerfile", contact.GinHelpHandle(deploy.ProjectBuildConf))
+	engine.GET("/config", contact.GinHelpHandle(config.Config))
 	return engine
 }

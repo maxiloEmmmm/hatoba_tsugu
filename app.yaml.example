@@ -3,3 +3,5 @@ kubernetes:
   token: token
 cd:
   namespace: app
+istio:
+  kiali: kiali.istio-system.svc.cluster.local

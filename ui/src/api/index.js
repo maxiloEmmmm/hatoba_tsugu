@@ -1,4 +1,5 @@
 import kubernetes from "./kubernetes"
+import config from "./config"
 import maxiloVue from "maxilo-vue"
 maxiloVue.register({
     register: function(){},
@@ -6,7 +7,8 @@ maxiloVue.register({
         Object.defineProperty(app.vue.prototype, '$api', {
             get: () => {
                 return {
-                    kubernetes
+                    kubernetes,
+                    config
                 }
             }
         })

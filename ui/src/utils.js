@@ -11,6 +11,23 @@ utils.add("btom", (bytes) => {
     return num.toPrecision(3) + ' ' + sizes[i];
 })
 
+utils.add("percent", (k) => {
+    return utils.tool.float(utils.tool.float(k, 2) * 100, 2)
+})
+
+utils.add("ktoview", (k) => {
+    let m = 1024
+    let g = m * 1024
+    k = utils.tool.number(k)
+    if(k < 1024) {
+        return `${k} K`
+    }else if(k < g) {
+        return `${utils.tool.float(k / m, 2)} M`
+    }else {
+        return `${utils.tool.float(k / g, 2)} G`
+    }
+})
+
 utils.add("makeKey", (arr, key) => {
     let obj = {}
     arr.forEach(item => {
