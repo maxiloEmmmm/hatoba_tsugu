@@ -51,7 +51,7 @@ export default {
     },
     methods: {
         onReport({item}){
-            window.open(`${this.$configs.istio.kiali}/kiali/console/namespaces/apps/applications/${this.$utils.kbgitid(item.git.url)}?tab=info`)
+            window.open(`${this.$configs.istio.kiali}/kiali/console/namespaces/${this.$configs.cd_ns}/applications/${this.$utils.kbgitid(item.git.url)}?tab=info`)
         },
         onSpace({item}){
             this.$router.push(`/hatoba_tsugu_deploy/project/${this.$utils.kbgitid(item.git.url)}`)
@@ -74,6 +74,7 @@ export default {
                     apiVersion: "v1", kind: "ConfigMap",
                     metadata: {
                         name: this.$utils.kbappid(id, c.env),
+                        namespace: this.$configs.cd_ns,
                         labels: {
                             role: "app",
                             app: id,
@@ -97,6 +98,7 @@ export default {
                 apiVersion: "deploy.hatobatsugu.gsc/v1", kind: "Project",
                 metadata: {
                     name: id,
+                    namespace: this.$configs.cd_ns,
                 }
             })
                 .catch(e => {
