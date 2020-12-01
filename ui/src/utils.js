@@ -54,7 +54,7 @@ utils.add("kbid", (str) => {
 
 utils.add("kbgitid", (url) => {
     let gitUrl = new URL(url)
-    return utils.kbid(gitUrl.pathname)
+    return utils.kbid(gitUrl.pathname.replace(/\.git.*$/, ""))
 })
 
 utils.add("kbappid", (id, env) => {
