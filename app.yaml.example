@@ -5,3 +5,9 @@ cd:
   namespace: app
 istio:
   kiali: kiali.istio-system.svc.cluster.local
+channel:
+- type: dingding
+  name: "通知群"
+  config:
+  	token: token
+  	secret: secret
