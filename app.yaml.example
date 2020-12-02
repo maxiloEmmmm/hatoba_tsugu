@@ -11,3 +11,7 @@ channel:
   config:
   	token: token
   	secret: secret
+- type: webhook
+  name: "通知服务"
+  config:
+    url: http://channel.cd
