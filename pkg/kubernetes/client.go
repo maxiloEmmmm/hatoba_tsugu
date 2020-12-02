@@ -8,12 +8,14 @@ import (
 	"hatoba_tsugu/pkg/app"
 	"istio.io/api/networking/v1beta1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"net/http"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"log"
 )
 
 var (
-	Client *resty.Client
-
+	Client                       *resty.Client
+	KubeClient                   *kubernetes.Clientset
 	HatobaTsuguDeployProjectPath K8Path
 	DeploymentPath               K8Path
 	ServicePath                  K8Path
@@ -27,6 +29,16 @@ type K8sIstioDestinationRule struct {
 }
 
 func Init() {
+	var err error
+	KubeClient, err = kubernetes.NewForConfig(&rest.Config{
+		Host:        app.Config.Kubernetes.ApiServer,
+		BearerToken: getToken(),
+	})
+
+	if err != nil {
+		log.Fatal(fmt.Sprintf("kube client: %s", err))
+	}
+
 	Client = resty.New()
 	Client.SetAuthToken(getToken())
 	Client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
@@ -85,28 +97,6 @@ func (k8p K8Path) OnePath(name string) string {
 
 func (k8p K8Path) ApiVersion() string {
 	return fmt.Sprintf("%s%s", go_tool.AssetsReturn(k8p.Api == "", "", go_tool.StringJoin(k8p.Api, "/")), k8p.Version)
-}
-
-func FullUpdateOrCreate(point K8Path, name string, data interface{}) error {
-	response, err := Client.R().
-		Get(point.OnePath(name))
-	if err != nil {
-		return err
-	}
-
-	if response.StatusCode() == http.StatusNotFound {
-		response, err = Client.R().SetBody(data).Post(point.MultiPath())
-		if err != nil {
-			return err
-		}
-	} else {
-		response, err = Client.R().SetBody(data).Put(point.OnePath(name))
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 type InValidMessage struct {
