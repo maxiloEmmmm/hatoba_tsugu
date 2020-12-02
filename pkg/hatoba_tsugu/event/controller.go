@@ -6,6 +6,7 @@ package event
 
 import (
 	"fmt"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/tools/cache"
@@ -42,17 +43,17 @@ func (c *Controller) onAdd(obj interface{}) {
 }
 
 func (c *Controller) onUpdate(oldObj interface{}, newObj interface{}) {
-	key, err := cache.MetaNamespaceKeyFunc(newObj)
-	if err == nil {
-		c.queue.Add(key)
-	}
+	//key, err := cache.MetaNamespaceKeyFunc(newObj)
+	//if err == nil {
+	//	c.queue.Add(key)
+	//}
 }
 
 func (c *Controller) onDelete(obj interface{}) {
-	key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
-	if err == nil {
-		c.queue.Add(key)
-	}
+	//key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
+	//if err == nil {
+	//	c.queue.Add(key)
+	//}
 }
 
 func (c *Controller) processNextItem() bool {
@@ -79,11 +80,13 @@ func (c *Controller) processNextItem() bool {
 }
 
 func (c *Controller) processItem(key string) error {
-	_, _, err := c.informer.GetIndexer().GetByKey(key)
+	obj, _, err := c.informer.GetIndexer().GetByKey(key)
 	if err != nil {
 		return err
 	}
 
+	evt := obj.(*v1.Event)
+	fmt.Printf("%+v", evt)
 	//todo: process obj & exist
 	return nil
 }

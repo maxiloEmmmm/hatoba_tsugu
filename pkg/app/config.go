@@ -9,6 +9,13 @@ type config struct {
 	Kubernetes KubernetesConfig
 	Cd         Cd
 	Istio      Istio
+	Channel    []Channel
+}
+
+type Channel struct {
+	Type   string
+	Name   string
+	Config map[string]string
 }
 
 type KubernetesConfig struct {

@@ -17,9 +17,11 @@ var (
 	Client                       *resty.Client
 	KubeClient                   *kubernetes.Clientset
 	HatobaTsuguDeployProjectPath K8Path
-	DeploymentPath               K8Path
-	ServicePath                  K8Path
-	DestinationRulePath          K8Path
+
+	HatobaTsuguEventNotificationPath K8Path
+	DeploymentPath                   K8Path
+	ServicePath                      K8Path
+	DestinationRulePath              K8Path
 )
 
 type K8sIstioDestinationRule struct {
@@ -51,6 +53,14 @@ func Init() {
 		Ns:      app.Config.Cd.Namespace,
 		Kind:    "Project",
 		Plural:  "projects",
+	}
+	HatobaTsuguEventNotificationPath = K8Path{
+		Group:   "apis",
+		Api:     "event.hatobatsugu.gsc",
+		Version: "v1",
+		Ns:      app.Config.Cd.Namespace,
+		Kind:    "Notification",
+		Plural:  "notifications",
 	}
 	DeploymentPath = K8Path{
 		Group:   "apis",
