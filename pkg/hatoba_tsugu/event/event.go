@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-var notifications []Notification
+var notifications []NotificationCrd
 
 func FetchEventNotification() {
 	response, err := kubernetes.Client.R().SetResult(&NotificationListCrd{}).Get(kubernetes.HatobaTsuguEventNotificationPath.MultiPath())
@@ -20,7 +20,9 @@ func FetchEventNotification() {
 		log.Fatal(err)
 	}
 
-	notifications = response.Result().(*NotificationListCrd).Items
+	if val, ok := response.Result().(*NotificationListCrd); ok {
+		notifications = val.Items
+	}
 }
 
 func Init(stopChan chan struct{}) {
@@ -40,17 +42,16 @@ type NotificationCrd struct {
 }
 
 type NotificationListCrd struct {
-	v1.ServiceList
 	metaV1.TypeMeta `json:",inline"`
 	metaV1.ListMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
-	Items           []Notification `json:"spec,omitempty"`
+	Items           []NotificationCrd `json:"items,omitempty"`
 }
 
 type Notification struct {
 	Name   string               `json:"name"`
 	Tpl    string               `json:"tpl"`
 	Engine string               `json:"engine"`
-	Filter []NotificationFilter `json:"notify_filter"`
+	Filter []NotificationFilter `json:"filter"`
 }
 
 type NotificationFilter struct {
@@ -58,3 +59,8 @@ type NotificationFilter struct {
 	Key  string `json:"key"`
 	Val  string `json:"val"`
 }
+
+const (
+	EqFilterType = "eq"
+	InFilterType = "in"
+)

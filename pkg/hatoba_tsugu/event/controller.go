@@ -6,11 +6,15 @@ package event
 
 import (
 	"fmt"
+	go_tool "github.com/maxiloEmmmm/go-tool"
+	"hatoba_tsugu/pkg/channel"
+	"html/template"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
+	"strings"
 
 	"time"
 )
@@ -86,8 +90,44 @@ func (c *Controller) processItem(key string) error {
 	}
 
 	evt := obj.(*v1.Event)
-	fmt.Printf("%+v", evt)
-	//todo: process obj & exist
+	for _, notify := range notifications {
+		tpl, err := template.New("tpl").Parse(notify.Spec.Tpl)
+		if err != nil {
+			continue
+		}
+
+		// 挨个过滤
+		var result = false
+		for _, filter := range notify.Spec.Filter {
+			val, _ := go_tool.Get(evt, filter.Key)
+			if str, ok := val.(string); ok {
+				// 具体规则
+				switch filter.Type {
+				case EqFilterType:
+					result = str == filter.Val
+				case InFilterType:
+					result = go_tool.InArray(strings.Split(filter.Val, ","), str)
+				}
+
+				if !result {
+					break
+				}
+			}
+		}
+
+		if result {
+			builder := &strings.Builder{}
+			err := tpl.Execute(builder, evt)
+			if err != nil {
+				continue
+			}
+
+			if c := channel.NewChannel(notify.Spec.Engine); c != nil {
+				c.Send(builder.String())
+			}
+			break
+		}
+	}
 	return nil
 }
 

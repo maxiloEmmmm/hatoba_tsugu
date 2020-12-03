@@ -14,7 +14,7 @@ type Channel interface {
 func NewChannel(name string) Channel {
 	c := getConfigByName(name)
 	if c == nil {
-		return nil
+		return &StdoutChannel{nil}
 	}
 
 	switch c.Type {

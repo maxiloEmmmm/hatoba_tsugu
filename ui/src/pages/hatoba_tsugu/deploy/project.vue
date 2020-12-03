@@ -4,6 +4,7 @@ import "codemirror/mode/dockerfile/dockerfile"
 export default {
     render(){
         return <tool-curd httpKey="cloud" title="项目" 
+            ref="curd"
             columns={this.cols}
             models={this.models}
             fetchUrl={this.$api.kubernetes.hatobatsugu.deploy.project.url.multi}
@@ -65,13 +66,9 @@ export default {
                 return
             }
 
-            let config = {
-                apiVersion: "v1", kind: "ConfigMap",
-                metadata: {name: ""}, data: {}
-            }
             data.resource.configs.forEach(c => {
                 let base = {
-                    apiVersion: "v1", kind: "ConfigMap",
+                    apiVersion: this.$api.kubernetes.api.configmap.path.apiVersion(), kind: this.$api.kubernetes.api.configmap.path.option.kind,
                     metadata: {
                         name: this.$utils.kbappid(id, c.env),
                         namespace: this.$configs.cd_ns,
@@ -95,12 +92,15 @@ export default {
 
             this.$api.kubernetes.hatobatsugu.deploy.project.fullUpdateOrCreate({
                 spec: data,
-                apiVersion: "deploy.hatobatsugu.gsc/v1", kind: "Project",
+                apiVersion: this.$api.kubernetes.hatobatsugu.event.project.path.apiVersion(), kind: this.$api.kubernetes.hatobatsugu.event.project.path.option.kind,
                 metadata: {
                     name: id,
                     namespace: this.$configs.cd_ns,
                 }
             })
+                .then(() => {
+                    this.$refs.curd.refresh()
+                })
                 .catch(e => {
                     this.$notification.info({description: e.response.data.message})
                 })

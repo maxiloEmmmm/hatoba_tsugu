@@ -1,5 +1,6 @@
 import kubernetes from "./kubernetes"
 import config from "./config"
+import event from "./event"
 import maxiloVue from "maxilo-vue"
 maxiloVue.register({
     register: function(){},
@@ -8,7 +9,8 @@ maxiloVue.register({
             get: () => {
                 return {
                     kubernetes,
-                    config
+                    config,
+                    event
                 }
             }
         })

@@ -9,5 +9,8 @@ maxiloVue.vue.component(projectPort.name, projectPort)
 import projectConfig from "./project-config"
 maxiloVue.vue.component(projectConfig.name, projectConfig)
 
+import notificationFilter from "./notification-filter"
+maxiloVue.vue.component(notificationFilter.name, notificationFilter)
+
 import log from "./log"
 maxiloVue.vue.component(log.name, log)

@@ -9,12 +9,12 @@ type WebhookChannel struct {
 	Config
 }
 
-func (ddc *WebhookChannel) Send(msg string) bool {
+func (wc *WebhookChannel) Send(msg string) bool {
 	_, err := resty.New().R().
 		SetHeader("Content-Type", "application/json;charset=utf-8").
 		SetBody(contact.H{
 			"msg": msg,
-		}).Post(ddc.Config["url"])
+		}).Post(wc.Config["url"])
 	if err != nil {
 		contact.Warning.Log("evt.channel.webhook", err.Error())
 		return false

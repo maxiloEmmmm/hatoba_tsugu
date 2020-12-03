@@ -56,7 +56,7 @@ func Init() {
 	}
 	HatobaTsuguEventNotificationPath = K8Path{
 		Group:   "apis",
-		Api:     "event.hatobatsugu.gsc",
+		Api:     "events.hatobatsugu.gsc",
 		Version: "v1",
 		Ns:      app.Config.Cd.Namespace,
 		Kind:    "Notification",

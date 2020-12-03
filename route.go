@@ -6,6 +6,7 @@ import (
 	"github.com/maxiloEmmmm/go-web/contact"
 	"hatoba_tsugu/api/config"
 	"hatoba_tsugu/api/deploy"
+	"hatoba_tsugu/api/event"
 	"hatoba_tsugu/pkg/kubernetes"
 	"net/http"
 )
@@ -25,5 +26,8 @@ func InitRoute() *gin.Engine {
 	engine.POST("/launch", contact.GinHelpHandle(deploy.ProjectLaunch))
 	engine.GET("/dockerfile", contact.GinHelpHandle(deploy.ProjectBuildConf))
 	engine.GET("/config", contact.GinHelpHandle(config.Config))
+	engine.GET("/channel", contact.GinHelpHandle(event.Channel))
+	engine.GET("/notification/filter", contact.GinHelpHandle(event.Filter))
+	engine.GET("/notification/filter/refresh", contact.GinHelpHandle(event.RefreshFilter))
 	return engine
 }
