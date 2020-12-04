@@ -128,6 +128,11 @@ export default {
             } catch (error) {
                 // for no vs
                 this.$api.kubernetes.apis.deployment.deleteLabel(`app=${id},env=${env}`)
+                this.$api.kubernetes.apis.istio.dr.get(this.$utils.kbappid(id, env))
+                    .then(response => {
+                        response.data.spec.subsets = []
+                        this.$api.kubernetes.apis.istio.dr.update(response.data)
+                    })
             }
         },
         async onDelDev({item, table}) {
