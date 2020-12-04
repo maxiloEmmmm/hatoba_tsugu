@@ -11,6 +11,6 @@ type StdoutChannel struct {
 }
 
 func (sc *StdoutChannel) Send(msg string) bool {
-	_, err := fmt.Fprint(os.Stdout, msg)
+	_, err := fmt.Fprintln(os.Stdout, msg)
 	return err == io.EOF
 }

@@ -61,6 +61,7 @@ type NotificationFilter struct {
 }
 
 const (
-	EqFilterType = "eq"
-	InFilterType = "in"
+	EqFilterType     = "eq"
+	InFilterType     = "in"
+	IgnoreFilterType = "ignore"
 )

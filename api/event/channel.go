@@ -21,6 +21,7 @@ func Filter(help *contact.GinHelp) {
 	help.Resource([]map[string]string{
 		{"label": event.EqFilterType, "value": event.EqFilterType},
 		{"label": event.InFilterType, "value": event.InFilterType},
+		{"label": event.IgnoreFilterType, "value": event.IgnoreFilterType},
 	})
 }
 

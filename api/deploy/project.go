@@ -14,7 +14,12 @@ func ProjectLaunch(help *contact.GinHelp) {
 	body.Env = hatoba_tsugu.TransferEnv(body.Env)
 	projectCrd, err := deploy.FetchGitProject(body.Git)
 	help.AssetsInValid("fetch", err)
-	help.AssetsInValid("launch", projectCrd.Spec.Launch(body.Env, body.Image))
+	if err = projectCrd.Spec.Launch(body.Env, body.Image); err != nil {
+		projectCrd.Spec.LaunchFailEvent(err)
+	} else {
+		projectCrd.Spec.LaunchSuccessFailEvent()
+	}
+	help.AssetsInValid("launch", err)
 	help.Resource(nil)
 }
 

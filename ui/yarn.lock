@@ -1816,42 +1816,6 @@ ansi-styles@^4.0.0, ansi-styles@^4.1.0:
     "@types/color-name" "^1.1.1"
     color-convert "^2.0.1"
 
-ant-design-vue@^1.6.4:
-  version "1.6.4"
-  resolved "https://registry.npm.taobao.org/ant-design-vue/download/ant-design-vue-1.6.4.tgz?cache=0&sync_timestamp=1595313924406&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fant-design-vue%2Fdownload%2Fant-design-vue-1.6.4.tgz#daba1ce6b357b6688dfe44a825864953a5c6c624"
-  integrity sha1-2roc5rNXtmiN/kSoJYZJU6XGxiQ=
-  dependencies:
-    "@ant-design/icons" "^2.1.1"
-    "@ant-design/icons-vue" "^2.0.0"
-    "@simonwep/pickr" "~1.7.0"
-    add-dom-event-listener "^1.0.2"
-    array-tree-filter "^2.1.0"
-    async-validator "^3.0.3"
-    babel-helper-vue-jsx-merge-props "^2.0.3"
-    babel-runtime "6.x"
-    classnames "^2.2.5"
-    component-classes "^1.2.6"
-    dom-align "^1.10.4"
-    dom-closest "^0.2.0"
-    dom-scroll-into-view "^2.0.0"
-    enquire.js "^2.1.6"
-    intersperse "^1.0.0"
-    is-mobile "^2.2.1"
-    is-negative-zero "^2.0.0"
-    ismobilejs "^1.0.0"
-    json2mq "^0.2.0"
-    lodash "^4.17.5"
-    moment "^2.21.0"
-    mutationobserver-shim "^0.3.2"
-    node-emoji "^1.10.0"
-    omit.js "^1.0.0"
-    raf "^3.4.0"
-    resize-observer-polyfill "^1.5.1"
-    shallow-equal "^1.0.0"
-    shallowequal "^1.0.2"
-    vue-ref "^2.0.0"
-    warning "^4.0.0"
-
 ant-design-vue@^1.6.5:
   version "1.7.2"
   resolved "https://registry.npmjs.org/ant-design-vue/-/ant-design-vue-1.7.2.tgz#aac7ff802205711631c8698e2a0c7b4e61dfd73e"
@@ -1888,14 +1852,14 @@ ant-design-vue@^1.6.5:
     vue-ref "^2.0.0"
     warning "^4.0.0"
 
-antd-vue-tool@^1.0.11-beta7:
-  version "1.0.11-beta7"
-  resolved "https://registry.npmjs.org/antd-vue-tool/-/antd-vue-tool-1.0.11-beta7.tgz#d6dc31cc5599615915ba202484b07e3991ec4c0e"
-  integrity sha512-rspFpSjfZvPAcSX/qEGAeA7Q93CNSO8FZHcEfsMlQM/v1bx7JTNlhD2O7Dd/Azlv92Xj4c6Q6OhA+PgVcHkBGg==
+antd-vue-tool@^1.0.11-beta11:
+  version "1.0.11-beta11"
+  resolved "https://registry.npmjs.org/antd-vue-tool/-/antd-vue-tool-1.0.11-beta11.tgz#c1e8d7d626077e75e7be07ff65e04e352d8d52f3"
+  integrity sha512-Tg0If7oAZ5FvZ02mMvokbLO0nIc2l1F0whonINDIIzd6d8P+2rgMihkMJtIc34WT6a9Bd4OMHCmMgkQBT0F7JQ==
   dependencies:
     "@babel/runtime-corejs3" "^7.11.2"
     "@rollup/plugin-commonjs" "^14.0.0"
-    ant-design-vue "^1.6.4"
+    ant-design-vue "^1.6.5"
     codemirror "^5.56.0"
     dayjs "^1.8.33"
     js-beautify "^1.11.0"

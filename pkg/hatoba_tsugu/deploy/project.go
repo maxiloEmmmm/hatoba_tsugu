@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	go_tool "github.com/maxiloEmmmm/go-tool"
 	"hatoba_tsugu/pkg/app"
 	"hatoba_tsugu/pkg/hatoba_tsugu"
 	"hatoba_tsugu/pkg/kubernetes"
@@ -35,6 +36,15 @@ type Project struct {
 	Description string    `json:"description"`
 	Git         *Git      `json:"git"`
 	Resource    *Resource `json:"resource"`
+	LaunchInfo
+}
+
+type LaunchInfo struct {
+	Image      string
+	Env        string
+	Deployment string
+	Version    string
+	Service    string
 }
 
 type ProjectCrd struct {
@@ -45,6 +55,9 @@ type ProjectCrd struct {
 
 func (p *Project) Launch(env string, image string) error {
 	version := time.Now().Format("15-04-05-20060102")
+	p.LaunchInfo.Version = version
+	p.LaunchInfo.Image = image
+	p.LaunchInfo.Env = env
 	deployment := p.Deployment(env, version, image)
 	response, err := kubernetes.Client.R().SetResult(&appsv1.Deployment{}).
 		Get(kubernetes.DeploymentPath.OnePath(deployment.ObjectMeta.Name))
@@ -91,6 +104,7 @@ func (p *Project) Launch(env string, image string) error {
 	} else {
 		old := response.Result().(*apiv1.Service)
 		service.ObjectMeta.ResourceVersion = old.ObjectMeta.ResourceVersion
+		service.Spec.ClusterIP = old.Spec.ClusterIP
 		response, err = kubernetes.Client.R().SetBody(service).Put(kubernetes.ServicePath.OnePath(service.ObjectMeta.Name))
 		if err != nil {
 			return err
@@ -98,6 +112,7 @@ func (p *Project) Launch(env string, image string) error {
 			return err
 		}
 	}
+
 	return p.AppendDestinationRuleVersion(env, version)
 }
 
@@ -107,6 +122,51 @@ func (p *Project) DnsName() string {
 
 func (p *Project) ProjectName(env string) string {
 	return fmt.Sprintf("%s-%s", env, p.DnsName())
+}
+
+func (p *Project) LaunchFailEvent(err error) {
+	p.launchEvent(err)
+}
+
+func (p *Project) LaunchSuccessFailEvent() {
+	p.launchEvent(nil)
+}
+
+func (p *Project) launchEvent(err error) {
+	body := &apiv1.Event{
+		TypeMeta: v1.TypeMeta{
+			Kind:       kubernetes.EventPath.Kind,
+			APIVersion: kubernetes.EventPath.ApiVersion(),
+		},
+		ObjectMeta: v1.ObjectMeta{
+			Name:      uuid.New().String(),
+			Namespace: kubernetes.EventPath.Ns,
+			Annotations: map[string]string{
+				"git":        p.Git.Url,
+				"deployment": p.LaunchInfo.Deployment,
+				"version":    p.LaunchInfo.Version,
+				"env":        p.LaunchInfo.Env,
+				"image":      p.LaunchInfo.Image,
+				"service":    p.LaunchInfo.Service,
+			},
+		},
+		InvolvedObject: apiv1.ObjectReference{
+			Kind:       kubernetes.HatobaTsuguDeployProjectPath.Kind,
+			Namespace:  kubernetes.HatobaTsuguDeployProjectPath.Ns,
+			Name:       kubernetes.TransferGitDns(p.Git.Url),
+			APIVersion: kubernetes.HatobaTsuguDeployProjectPath.ApiVersion(),
+		},
+		Reason:  go_tool.AssetsReturn(err == nil, "Success", "Failed").(string),
+		Message: "Launch ok",
+		Source: apiv1.EventSource{
+			Component: kubernetes.HatobaTsuguDeployProjectPath.Kind,
+		},
+		Type: "Normal",
+	}
+	if err != nil {
+		body.Message = err.Error()
+	}
+	_, _ = kubernetes.Client.R().SetBody(body).Post(kubernetes.EventPath.MultiPath())
 }
 
 func (p *Project) Labels(env string) map[string]string {
@@ -159,6 +219,7 @@ func (p *Project) Service(env string) *apiv1.Service {
 	labels := p.Labels(env)
 
 	as.ObjectMeta.Name = p.ProjectName(env)
+	p.LaunchInfo.Service = as.ObjectMeta.Name
 	as.ObjectMeta.Namespace = app.Config.Cd.Namespace
 	as.ObjectMeta.Labels = labels
 	as.Spec.Selector = labels
@@ -176,6 +237,7 @@ func (p *Project) Deployment(env string, version string, image string) *appsv1.D
 
 	// 名字无用
 	name := uuid.New().String()
+	p.LaunchInfo.Deployment = name
 	labels := p.Labels(env)
 	labels["version"] = version
 

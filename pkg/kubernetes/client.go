@@ -21,6 +21,7 @@ var (
 	HatobaTsuguEventNotificationPath K8Path
 	DeploymentPath                   K8Path
 	ServicePath                      K8Path
+	EventPath                        K8Path
 	DestinationRulePath              K8Path
 )
 
@@ -77,6 +78,14 @@ func Init() {
 		Ns:      app.Config.Cd.Namespace,
 		Kind:    "Service",
 		Plural:  "services",
+	}
+	EventPath = K8Path{
+		Group:   "api",
+		Api:     "",
+		Version: "v1",
+		Ns:      app.Config.Cd.Namespace,
+		Kind:    "Event",
+		Plural:  "events",
 	}
 	DestinationRulePath = K8Path{
 		Group:   "apis",

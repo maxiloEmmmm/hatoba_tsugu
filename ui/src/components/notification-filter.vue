@@ -11,8 +11,8 @@ export default {
             ...this.filters.map(filter => {
                 return {
                     title: <a-input-group compact size="small">
-                        <a-select size="small" options={this.set.filters} vModel={filter.type} vOn:change={this.onChange}></a-select>
-                        <a-input style="width: 20%" placeholder="key" vModel={filter.key} vOn:change={this.onChange}/>
+                        <a-select style="width: 20%" size="small" options={this.set.filters} vModel={filter.type} vOn:change={this.onChange}></a-select>
+                        <a-input style="width: 30%" placeholder="key" vModel={filter.key} vOn:change={this.onChange}/>
                         <a-input style="width: 50%" placeholder="val" vModel={filter.val} vOn:change={this.onChange}/>
                     </a-input-group>
                 }

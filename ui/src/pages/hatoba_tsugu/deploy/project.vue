@@ -107,25 +107,28 @@ export default {
         },
         async onDelMore(item, table, env){
             let id = this.$utils.kbgitid(item.git.url)
-            this.$api.kubernetes.apis.istio.vs.get(this.$utils.kbappid(id, env))
-                .then(response => {
-                    let useR = []
-                    response.data.spec.http.forEach(h => {
-                        h.route.forEach(r => {
-                            useR.push(r.destination.subset)
-                        })
+            try {
+                let response = await this.$api.kubernetes.apis.istio.vs.get(this.$utils.kbappid(id, env))
+                let useR = []
+                response.data.spec.http.forEach(h => {
+                    h.route.forEach(r => {
+                        useR.push(r.destination.subset)
                     })
-                    if(useR.length > 0) {
-                        this.$api.kubernetes.apis.istio.dr.get(this.$utils.kbappid(id, env))
-                            .then(response => {
-                                response.data.spec.subsets = response.data.spec.subsets.filter(s => useR.includes(s.name))
-                                this.$state.newState(Promise.all([
-                                    this.$api.kubernetes.apis.istio.dr.update(response.data),
-                                    this.$api.kubernetes.apis.deployment.deleteLabel(`app=${id},env=${env},version notin (${useR.join(',')})`),
-                                ]), {})
-                            })
-                    }
                 })
+                if(useR.length > 0) {
+                    this.$api.kubernetes.apis.istio.dr.get(this.$utils.kbappid(id, env))
+                        .then(response => {
+                            response.data.spec.subsets = response.data.spec.subsets.filter(s => useR.includes(s.name))
+                            this.$state.newState(Promise.all([
+                                this.$api.kubernetes.apis.istio.dr.update(response.data),
+                                this.$api.kubernetes.apis.deployment.deleteLabel(`app=${id},env=${env},version notin (${useR.join(',')})`),
+                            ]), {})
+                        })
+                }
+            } catch (error) {
+                // for no vs
+                this.$api.kubernetes.apis.deployment.deleteLabel(`app=${id},env=${env}`)
+            }
         },
         async onDelDev({item, table}) {
             this.onDelMore(item, table, "dev")
