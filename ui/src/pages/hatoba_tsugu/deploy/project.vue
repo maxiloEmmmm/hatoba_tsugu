@@ -92,7 +92,8 @@ export default {
 
             this.$api.kubernetes.hatobatsugu.deploy.project.fullUpdateOrCreate({
                 spec: data,
-                apiVersion: this.$api.kubernetes.hatobatsugu.event.project.path.apiVersion(), kind: this.$api.kubernetes.hatobatsugu.event.project.path.option.kind,
+                apiVersion: this.$api.kubernetes.hatobatsugu.deploy.project.path.apiVersion(), 
+                kind: this.$api.kubernetes.hatobatsugu.deploy.project.path.option.kind,
                 metadata: {
                     name: id,
                     namespace: this.$configs.cd_ns,

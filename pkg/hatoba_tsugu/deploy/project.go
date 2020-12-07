@@ -178,6 +178,10 @@ func (p *Project) Labels(env string) map[string]string {
 }
 
 func (p *Project) ConfigMap(env string) (volumes []apiv1.Volume, mounts []apiv1.VolumeMount) {
+	if len(p.Resource.Configs) == 0 {
+		return
+	}
+
 	volume := apiv1.Volume{}
 	volume.ConfigMap = &apiv1.ConfigMapVolumeSource{LocalObjectReference: apiv1.LocalObjectReference{Name: p.ProjectName(env)}}
 	volume.Name = hatoba_tsugu.VolumeAppConfig

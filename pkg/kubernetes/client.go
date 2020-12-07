@@ -11,6 +11,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"log"
+	"net/http"
 )
 
 var (
@@ -36,6 +37,9 @@ func Init() {
 	KubeClient, err = kubernetes.NewForConfig(&rest.Config{
 		Host:        app.Config.Kubernetes.ApiServer,
 		BearerToken: getToken(),
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
 	})
 
 	if err != nil {
