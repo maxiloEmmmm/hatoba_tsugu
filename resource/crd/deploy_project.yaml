@@ -38,6 +38,18 @@ spec:
                     dockerfile:
                       type: string
                       default: ""
+                    prometheus:
+                      type: object
+                      properties:
+                        enable:
+                          type: boolean
+                          default: false
+                        port:
+                          type: integer
+                          default: 80
+                        path:
+                          type: string
+                          default: /metrics
                     ports:
                       type: array
                       items:

@@ -253,6 +253,11 @@ func (p *Project) Deployment(env string, version string, image string) *appsv1.D
 
 	configVolumes, configMounts := p.ConfigMap(env)
 	as.Spec.Template.Spec.Volumes = configVolumes
+	as.Spec.Template.ObjectMeta.Annotations = map[string]string{
+		"prometheus.io/path": p.Resource.Prometheus.Path,
+		"prometheus.io/port": fmt.Sprintf("%d", p.Resource.Prometheus.Port),
+		"prometheus.io/scrape": go_tool.AssetsReturn(p.Resource.Prometheus.Enable, "true", "false").(string),
+	}
 	as.Spec.Template.Spec.Containers = []apiv1.Container{
 		{
 			Name:         name,
@@ -321,6 +326,13 @@ type Resource struct {
 	Ports      []apiv1.ServicePort `json:"ports"`
 	Configs    []*ResourceConfig   `json:"configs"`
 	Dockerfile string              `json:"dockerfile"`
+	Prometheus ResourcePrometheus `json:"prometheus"`
+}
+
+type ResourcePrometheus struct {
+	Enable bool
+	Port int32
+	Path string
 }
 
 type ResourceConfig struct {

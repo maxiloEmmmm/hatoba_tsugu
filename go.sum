@@ -329,6 +329,8 @@ github.com/maxiloEmmmm/go-tool v0.0.8 h1:VTjlQrlY9ONj1u6rxj6ZPwbL4JPu8oIk38cEEij
 github.com/maxiloEmmmm/go-tool v0.0.8/go.mod h1:OGu5R94D8011Zo/7jbPzILRsqRsyzn9/kBKUFbWV2Iw=
 github.com/maxiloEmmmm/go-web v0.0.19-beta11 h1:5/XGLD9LxRz3cNHOP4MrtiCZSQ2/9hO5wpz2Xr0FK+Q=
 github.com/maxiloEmmmm/go-web v0.0.19-beta11/go.mod h1:9iumLPiFz0R2A3fErqCUvBYw1bLi4th3ObzId0YcLpw=
+github.com/maxiloEmmmm/go-web v0.0.19-beta12 h1:uMdBRhD/FD0MzXH/JnPRGc5SUclc0MzB0CbTlJ0pUWs=
+github.com/maxiloEmmmm/go-web v0.0.19-beta12/go.mod h1:9iumLPiFz0R2A3fErqCUvBYw1bLi4th3ObzId0YcLpw=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/mitchellh/cli v1.0.0/go.mod h1:hNIlj7HEI86fIcpObd7a0FcrxTWetlwJDGcceTlRvqc=
 github.com/mitchellh/go-homedir v1.0.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=

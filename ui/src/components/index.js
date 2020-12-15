@@ -9,6 +9,9 @@ maxiloVue.vue.component(projectPort.name, projectPort)
 import projectConfig from "./project-config"
 maxiloVue.vue.component(projectConfig.name, projectConfig)
 
+import projectPrometheus from "./project-prometheus"
+maxiloVue.vue.component(projectPrometheus.name, projectPrometheus)
+
 import notificationFilter from "./notification-filter"
 maxiloVue.vue.component(notificationFilter.name, notificationFilter)
 

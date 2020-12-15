@@ -17,7 +17,7 @@ require (
 	github.com/googleapis/gnostic v0.5.3 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/maxiloEmmmm/go-tool v0.0.8
-	github.com/maxiloEmmmm/go-web v0.0.19-beta11
+	github.com/maxiloEmmmm/go-web v0.0.19-beta12
 	github.com/olivere/elastic/v7 v7.0.22 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
