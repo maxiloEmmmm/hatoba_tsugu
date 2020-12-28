@@ -36,7 +36,7 @@ export default {
                 }, default: [], layout_key: "c1"},
                 {field: "resource.prometheus", type: "customer", title: "监控", hidden: true, option: {
                     customer_form: 'project-prometheus'
-                }, default: [], layout_key: "c1"},
+                }, default: {}, layout_key: "c1"},
                 {field: "resource.dockerfile", type: "code", title: "打包", hidden: true, option: {
                     language: 'dockerfile'
                 }, layout_key: "c1"},
